@@ -1,0 +1,29 @@
+{
+  "name": "model-mapper",
+  "version": "1.0.0",
+  "description": "Utility for flattening models into view models",
+  "main": "model-mapper.js",
+  "scripts": {
+    "test": "mocha -R spec ./test/test.js"
+  },
+  "keywords": [
+    "mapper",
+    "viewmodel",
+    "view",
+    "model",
+    "object-mapper",
+    "view-mapper",
+    "view model",
+    "model-mapper",
+    "model mapper",
+    "mapping"
+  ],
+  "author": "Simon Trewhella",
+  "license": "ISC",
+  "devDependencies": {
+    "should": "^4.3.0"
+  },
+  "dependencies": {
+    "underscore": "^1.7.0"
+  }
+}
