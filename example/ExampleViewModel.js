@@ -6,10 +6,6 @@
 
     var mapper = require('../model-mapper');
 
-    module.exports.expects = [
-        'Example'
-    ];
-
     module.exports.map = {
         number: '=',
         string: '=',
