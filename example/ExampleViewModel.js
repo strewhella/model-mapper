@@ -23,7 +23,7 @@
             return example.method();
         },
         mapping: function(example){
-            return mapper.map('Nested', 'NestedViewModel', example.nested);
+            return mapper.map('NestedViewModel', example.nested);
         }
     };
 

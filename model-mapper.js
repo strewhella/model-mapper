@@ -8,7 +8,6 @@
     module.exports.createMap = createMap;
     module.exports.getMaps = getMaps;
     module.exports.map = map;
-    module.exports.mapKey = mapKey;
 
     var _ = require('underscore');
     var fs = require('fs');
@@ -26,25 +25,18 @@
                 var outputName = path.basename(file, '.js');
                 var config = require(path.join(directory, file));
 
-                if (!config.expects || config.expects.length === 0) {
-                    log('No expected input provided in ' + outputName + '.js');
+                if (config.map) {
+                    createMap(outputName, config.map);
                 }
                 else {
-                    config.expects.forEach(function (inputName) {
-                        if (config.map) {
-                            createMap(inputName, outputName, config.map);
-                        }
-                        else {
-                            console.error('No map config provided for ' + inputName + ' to ' + outputName + ' in ' + outputName + '.js');
-                        }
-                    });
+                    console.error('No map config exported in ' + outputName + '.js');
                 }
             }
         });
     };
 
-    function createMap(inputName, outputName, map) {
-        vm.maps[mapKey(inputName, outputName)] = map;
+    function createMap(outputName, map) {
+        vm.maps[outputName] = map;
     }
 
     function getMappedValue(input, props) {
@@ -62,31 +54,31 @@
         return vm.maps;
     }
 
-    function map(inputName, outputName, input) {
+    function map(outputName, input) {
         var output;
 
-        var mapConfig = vm.maps[mapKey(inputName, outputName)];
+        var mapConfig = vm.maps[outputName];
         if (mapConfig) {
             if (Array.isArray(input)){
                 output = [];
                 for (var i = 0, length = input.length; i < length; ++i){
-                    output[i] = mapItem(inputName, outputName, input[i]);
+                    output[i] = mapItem(outputName, input[i]);
                 }
             }
             else {
-                output = mapItem(inputName, outputName, input);
+                output = mapItem(outputName, input);
             }
         }
         else {
-            throw new Error('No mapping found for ' + inputName + ' to ' + outputName);
+            throw new Error('No mapping found for ' + outputName);
         }
 
         return output;
     }
 
-    function mapItem(inputName, outputName, input){
+    function mapItem(outputName, input){
         var output = {};
-        var config = vm.maps[mapKey(inputName, outputName)];
+        var config = vm.maps[outputName];
 
         var keys = Object.keys(config);
         for (var i = 0, length = keys.length; i < length; ++i){
@@ -111,9 +103,5 @@
             }
         }
         return output;
-    }
-
-    function mapKey(inputName, outputName){
-        return inputName + outputName;
     }
 }());

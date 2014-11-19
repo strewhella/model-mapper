@@ -7,7 +7,7 @@
     var mapper = require('../model-mapper');
     var should = require('should');
 
-    mapper.createMap('Test', 'TestViewModel', {
+    mapper.createMap('TestViewModel', {
         test: '='
     });
 
@@ -15,7 +15,7 @@
     var exampleDir = path.join(__dirname, '../example');
     mapper.createMapsFromDir(exampleDir);
     var maps = mapper.getMaps();
-    var exampleKey = mapper.mapKey('Example', 'ExampleViewModel');
+    var exampleKey = 'ExampleViewModel';
 
     describe('view-mapper', function(){
         describe('when creating maps directly', function(){
@@ -24,7 +24,7 @@
             });
 
             var maps = mapper.getMaps();
-            var testKey = mapper.mapKey('Test', 'TestViewModel');
+            var testKey = 'TestViewModel';
 
             it('should contain correct config', function(){
                 maps.should.have.property(testKey);
@@ -39,7 +39,7 @@
             var Test = {
                 test: 'simple'
             };
-            var result = mapper.map('Test', 'TestViewModel', Test);
+            var result = mapper.map('TestViewModel', Test);
 
             it('should create a result', function(){
                 should.exist(result);
@@ -95,7 +95,7 @@
         Example.nested = Nested;
 
         describe('when mapping complex maps', function(){
-            var result = mapper.map('Example', 'ExampleViewModel', Example);
+            var result = mapper.map('ExampleViewModel', Example);
 
             it('should create a result', function () {
                 should.exist(result);
@@ -204,7 +204,7 @@
 
         describe('when mapping arrays of objects', function(){
             var array = [Example, Example];
-            var result = mapper.map('Example', 'ExampleViewModel', array);
+            var result = mapper.map('ExampleViewModel', array);
 
             it('should create result', function(){
                 should.exist(result);
@@ -219,22 +219,12 @@
             });
         });
 
-        var BadExample = {
-            noprop: '=',
-            badnest: 'props.dont.exist',
-            evilfunc: function(){
-                return 'evilfunc';
-            },
-            mapping: function(example){
-                return mapper.map('NoMapping', 'NoMapping', example);
-            }
-        };
         describe('when passed invalid mappings', function(){
             it('should ignore props that don\'t exist', function(){
                 var BadExample = {
                     noprop: '='
                 };
-                var result = mapper.map('Example', 'ExampleViewModel', BadExample);
+                var result = mapper.map('ExampleViewModel', BadExample);
                 should.exist(result);
             });
 
@@ -242,7 +232,7 @@
                 var BadExample = {
                     badnest: 'props.dont.exist'
                 };
-                var result = mapper.map('Example', 'ExampleViewModel', BadExample);
+                var result = mapper.map('ExampleViewModel', BadExample);
                 should.exist(result);
             });
 
@@ -252,12 +242,12 @@
                         return 'evilfunc';
                     }
                 };
-                var result = mapper.map('Example', 'ExampleViewModel', BadExample);
+                var result = mapper.map('ExampleViewModel', BadExample);
                 should.exist(result);
             });
 
             it('should throw an error when mappings don\'t exist', function(){
-                (function(){mapper.map('None', 'MoreNone', {})}).should.throw(/None/);
+                (function(){mapper.map('MoreNone', {})}).should.throw(/MoreNone/);
             });
 
         });
