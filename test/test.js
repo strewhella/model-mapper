@@ -250,6 +250,14 @@
                 (function(){mapper.map('MoreNone', {})}).should.throw(/MoreNone/);
             });
 
+            it('should throw an error when passed null input', function(){
+                (function(){mapper.map('ExampleViewModel', null)}).should.throw(/null/);
+            });
+
+            it('should throw an error when passed undefined input', function(){
+                (function(){mapper.map('ExampleViewModel', undefined)}).should.throw(/undefined/);
+            });
+
         });
     });
 

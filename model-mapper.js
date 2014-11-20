@@ -59,6 +59,10 @@
 
         var mapConfig = vm.maps[outputName];
         if (mapConfig) {
+            if (input === null || _.isUndefined(input)){
+                throw new Error(input + ' passed as input for ' + outputName + ' mapping');
+            }
+
             if (Array.isArray(input)){
                 output = [];
                 for (var i = 0, length = input.length; i < length; ++i){

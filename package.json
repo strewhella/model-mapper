@@ -1,6 +1,6 @@
 {
   "name": "model-mapper",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Utility for flattening models into view models",
   "main": "model-mapper.js",
   "scripts": {

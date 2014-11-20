@@ -19,29 +19,24 @@ The `map` config object
 
 An example configuration file from the example folder in the project (`ExampleViewModel.js`):
 ```
-(function(){
-    'use strict';
+var mapper = require('model-mapper');
 
-    var mapper = require('../model-mapper');
-    
-    module.exports.map = {
-        number: '=',
-        string: '=',
-        date: '=',
-        method: '=',
-        object: '=',
-        array: '=',
-        nested: 'object.member',
-        deepnest: 'a.b.c.d.e',
-        func: function(example){
-            return example.method();
-        },
-        mapping: function(example){
-            return mapper.map('NestedViewModel', example.nested);
-        }
-    };
-
-})();
+module.exports.map = {
+    number: '=',
+    string: '=',
+    date: '=',
+    method: '=',
+    object: '=',
+    array: '=',
+    nested: 'object.member',
+    deepnest: 'a.b.c.d.e',
+    func: function(example){
+        return example.method();
+    },
+    mapping: function(example){
+        return mapper.map('NestedViewModel', example.nested);
+    }
+};
 ```
 
 An example input object for this configuration might be:
@@ -75,7 +70,7 @@ var Example = {
 Example.nested = Nested;
 ```
 
-This object can then be mapped using `map('ExampleViewModel', Example);`
+This object can then be mapped using `map('ExampleViewModel', Example);`. You can also use the same call to map an array of objects, by simply passing in the array of Example objects.
 
 You can create mappings of your properties in 3 ways:
 
