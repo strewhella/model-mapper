@@ -120,7 +120,7 @@ Added support for directly mapping constant values. You can now directly map val
 
 In the case of string constants, you must prefix them when '=', unless you desire an empty, in which case '' will work just fine.
 
-Example constants object mapping:
+Example constants object mappings:
 
 ```
 module.exports.map = {
