@@ -311,4 +311,66 @@ describe('model-mapper', function(){
         });
     });
 
+    describe('when mapping constants', function(){
+        var constantResult = mapper.map('ConstantsExample', {});
+
+        it('should create number properties', function(){
+            constantResult.should.have.property('number');
+            constantResult.should.have.property('double');
+        });
+        
+        it('should create string properties', function(){
+            constantResult.should.have.property('string');
+        });
+
+        it('should create empty string properties', function(){
+            constantResult.should.have.property('emptyString');
+        });
+
+        it('should create array properties', function(){
+            constantResult.should.have.property('array');
+        });
+
+        it('should create object properties', function(){
+            constantResult.should.have.property('object');
+        });
+        
+        it('should create null properties', function(){
+            constantResult.should.have.property('nullValue');
+        });
+
+        it('should create undefined properties', function(){
+            constantResult.should.have.property('undefinedValue');
+        });
+
+        it('should copy number properties', function(){
+            constantResult.number.should.eql(5);
+            constantResult.double.should.eql(4.1);
+        });
+
+        it('should copy string properties', function(){
+            constantResult.string.should.eql('whatever');
+        });
+
+        it('should copy empty string properties', function(){
+            constantResult.emptyString.should.eql('');
+        });
+
+        it('should copy array properties', function(){
+            constantResult.array.should.eql(['array']);
+        });
+
+        it('should copy object properties', function(){
+            constantResult.object.should.have.property('property');
+            constantResult.object.property.should.eql('copied');
+        });
+
+        it('should copy null properties', function(){
+            _.isNull(constantResult.nullValue).should.eql(true);
+        });
+
+        it('should copy undefined properties', function(){
+            _.isUndefined(constantResult.undefinedValue).should.eql(true);
+        });
+    });
 });

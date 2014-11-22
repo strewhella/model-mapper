@@ -81,7 +81,8 @@ You can create mappings of your properties in 3 ways:
 
 `function`s can be specfied as configuration properties and these will be executed by the mapper, with the current input object passed in to the function. This enables you to nest mappings as above in the example. It also allows you to add calculated fields to your resultant view models.
 
-*Update 1.1*
+**Update 1.1 - Asynchronous mapping functions**
+
 Added support for asynchronous mapping functions. A callback can now be optionally passed to `map`, causing the function to be treated asyncronously.
 
 For example, using the following map definition containing an async function:
@@ -94,7 +95,7 @@ module.exports.map = {
                 done('ERROR');
             }
             else {
-                done(null, 5);
+                done(null, 5); // The second parameter passed to the done callback will be the value of the async property
             }
         }, 200);
     }
@@ -105,8 +106,33 @@ Call the mapping function on an empty object:
 
 ```
 mapper.map('AsyncExample', {}, function(err, result) {
-`    // Access result here
-`});
+    // Access result here
+});
 ```
 
 The callback follows the Node convention of error then result, and will contain an array of any errors generated during asynchronous calls. For example, any database accesses that resulted in errors will have the error propagated to this callback. If no callback is supplied to `map`, the call will be treated synchronously and the result will be returned as usual.
+
+The signature of the async map function: `map(outputName, input, [callback])`
+
+**Update 1.1.5 - Mapping constant values**
+
+Added support for directly mapping constant values. You can now directly map values to your resultant objects. All values will map directly **except** for strings.
+
+In the case of string constants, you must prefix them when '=', unless you desire an empty, in which case '' will work just fine.
+
+Example constants object mapping:
+
+```
+module.exports.map = {
+    number: 5,
+    double: 4.1,
+    string: '=whatever',  // The output for this property will be 'whatever'
+    emptyString: '',
+    array: ['array'],
+    object: {
+        property: 'copied'
+    },
+    nullValue: null,
+    undefinedValue: undefined
+};
+```

@@ -25,6 +25,7 @@ function addError(err){
     vm.errors.push(err);
 }
 
+//TODO: Add aliasing ability for maps
 function createMapsFromDir(directory) {
     var files = fs.readdirSync(directory);
 
@@ -178,8 +179,16 @@ function mapProperty(params, callback){
         }
         callback(null, input[key]);
     }
+    else if (_.isString(value)){
+        if (value.length > 0 && value[0] !== '=') {
+            var props = value.split('.');
+            callback(null, getMappedValue(input, props));
+        }
+        else {
+            callback(null, value.substring(1));
+        }
+    }
     else {
-        var props = value.split('.');
-        callback(null, getMappedValue(input, props));
+        callback(null, value);
     }
 }
