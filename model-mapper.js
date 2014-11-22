@@ -1,111 +1,185 @@
 /**
- * Created by Simon on 16/11/2014.
- */
-(function () {
-    'use strict';
+* Created by Simon on 16/11/2014.
+*/
+'use strict';
 
-    module.exports.createMapsFromDir = createMapsFromDir;
-    module.exports.createMap = createMap;
-    module.exports.getMaps = getMaps;
-    module.exports.map = map;
+module.exports.createMapsFromDir = createMapsFromDir;
+module.exports.createMap = createMap;
+module.exports.getMaps = getMaps;
+module.exports.map = map;
 
-    var _ = require('underscore');
-    var fs = require('fs');
-    var path = require('path');
+var _ = require('underscore');
+var fs = require('fs');
+var path = require('path');
+var async = require('async');
 
-    var vm = {
-        maps: {}
-    };
+var vm = {
+    maps: {},
+    errors: null
+};
 
-    function createMapsFromDir(directory) {
-        var files = fs.readdirSync(directory);
-
-        files.forEach(function(file) {
-            if (path.extname(file) === '.js') {
-                var outputName = path.basename(file, '.js');
-                var config = require(path.join(directory, file));
-
-                if (config.map) {
-                    createMap(outputName, config.map);
-                }
-                else {
-                    console.error('No map config exported in ' + outputName + '.js');
-                }
-            }
-        });
-    };
-
-    function createMap(outputName, map) {
-        vm.maps[outputName] = map;
+function addError(err){
+    if (!vm.errors){
+        vm.errors = [];
     }
+    vm.errors.push(err);
+}
 
-    function getMappedValue(input, props) {
-        for (var i = 0, length = props.length; i < length; ++i) {
-            if (!input || !input.hasOwnProperty(props[i])){
-                break;
-            }
-            input = input[props[i]];
-        }
+function createMapsFromDir(directory) {
+    var files = fs.readdirSync(directory);
 
-        return input;
-    }
+    files.forEach(function(file) {
+        if (path.extname(file) === '.js') {
+            var outputName = path.basename(file, '.js');
+            var config = require(path.join(directory, file));
 
-    function getMaps(){
-        return vm.maps;
-    }
-
-    function map(outputName, input) {
-        var output;
-
-        var mapConfig = vm.maps[outputName];
-        if (mapConfig) {
-            if (input === null || _.isUndefined(input)){
-                throw new Error(input + ' passed as input for ' + outputName + ' mapping');
-            }
-
-            if (Array.isArray(input)){
-                output = [];
-                for (var i = 0, length = input.length; i < length; ++i){
-                    output[i] = mapItem(outputName, input[i]);
-                }
+            if (config.map) {
+                createMap(outputName, config.map);
             }
             else {
-                output = mapItem(outputName, input);
+                console.error('No map config exported in ' + outputName + '.js');
+            }
+        }
+    });
+};
+
+function createMap(outputName, map) {
+    vm.maps[outputName] = map;
+}
+
+function getMappedValue(input, props) {
+    for (var i = 0, length = props.length; i < length; ++i) {
+        if (!input || !input.hasOwnProperty(props[i])){
+            break;
+        }
+        input = input[props[i]];
+    }
+
+    return input;
+}
+
+function getMaps(){
+    return vm.maps;
+}
+
+function map(outputName, input, callback) {
+    vm.errors = [];
+
+    var mapConfig = vm.maps[outputName];
+    if (mapConfig) {
+        if (input === null || _.isUndefined(input)){
+            throw new Error(input + ' passed as input for ' + outputName + ' mapping');
+        }
+
+        var calls = [];
+        if (Array.isArray(input)){
+            for (var i = 0, length = input.length; i < length; ++i){
+                calls.push({
+                    outputName: outputName,
+                    input: input[i]
+                });
             }
         }
         else {
-            throw new Error('No mapping found for ' + outputName);
+            calls.push({
+                outputName: outputName,
+                input: input
+            });
         }
 
-        return output;
+        if (callback) {
+            async.map(calls, mapObject, function (err, results) {
+                if (!Array.isArray(input)){
+                    callback(vm.errors, results[0]);
+                    return;
+                }
+                callback(vm.errors, results);
+            });
+        }
+        else {
+            if (calls.length === 1){
+                return mapObject(calls[0]);
+            }
+            var output = [];
+            calls.forEach(function(call){
+                output.push(mapObject(call));
+            });
+            return output;
+        }
+    }
+    else {
+        throw new Error('No mapping found for ' + outputName);
+    }
+}
+
+function mapObject(params, callback){
+    var outputName = params.outputName;
+    var input = params.input;
+    var output = {};
+    var config = vm.maps[outputName];
+
+    var keys = Object.keys(config);
+    var calls = [];
+    for (var i = 0, length = keys.length; i < length; ++i){
+        calls.push({
+            input: input,
+            key: keys[i],
+            value: config[keys[i]]
+        });
     }
 
-    function mapItem(outputName, input){
-        var output = {};
-        var config = vm.maps[outputName];
-
-        var keys = Object.keys(config);
-        for (var i = 0, length = keys.length; i < length; ++i){
-            var key = keys[i];
-            var value = config[key];
-
-            if (_.isFunction(value)){
-                try {
-                    output[key] = value(input);
-                }
-                catch (e){}
+    if (callback) {
+        async.map(calls, mapProperty, function (err, results) {
+            for (var j = 0, callsLength = calls.length; j < callsLength; ++j) {
+                var propName = calls[j].key;
+                output[propName] = results[j];
             }
-            else if (value === '='){
-                if (!input.hasOwnProperty(key)){
-                    continue;
-                }
-                output[key] = input[key];
-            }
-            else {
-                var props = value.split('.');
-                output[key] = getMappedValue(input, props);
-            }
+            callback(null, output);
+        });
+    }
+    else {
+        for (var j = 0, callsLength = calls.length; j < callsLength; ++j){
+            (function(index){
+                mapProperty(calls[index], function(err, result){
+                    output[calls[index].key] = result;
+                });
+            })(j);
         }
         return output;
     }
-}());
+}
+
+function mapProperty(params, callback){
+    var input = params.input;
+    var key = params.key;
+    var value = params.value;
+
+    if (_.isFunction(value)){
+        try {
+            var result = value(input, function(err, result){
+                if (err){
+                    addError(err);
+                    callback();
+                }
+                else {
+                    callback(null, result);
+                }
+            });
+
+            if (!_.isUndefined(result)){
+                callback(null, result);
+            }
+        }
+        catch (e){}
+    }
+    else if (value === '='){
+        if (!input.hasOwnProperty(key)){
+            callback();
+        }
+        callback(null, input[key]);
+    }
+    else {
+        var props = value.split('.');
+        callback(null, getMappedValue(input, props));
+    }
+}

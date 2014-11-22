@@ -9,6 +9,7 @@ You tell the mapper how to create the view models by creating maps. This can be 
 `createMap(outputName, map)`
 
 `outputName` can be anything, this is simply the key used to reference the map later. It makes sense however, to name this as the type of object you expect to map to.
+
 `map` is an object containing the configuration of your view model. Each property of this object will be in your resultant view model.
 
 `createMapsFromDir(directory)`
@@ -80,3 +81,32 @@ You can create mappings of your properties in 3 ways:
 
 `function`s can be specfied as configuration properties and these will be executed by the mapper, with the current input object passed in to the function. This enables you to nest mappings as above in the example. It also allows you to add calculated fields to your resultant view models.
 
+*Update 1.1*
+Added support for asynchronous mapping functions. A callback can now be optionally passed to `map`, causing the function to be treated asyncronously.
+
+For example, using the following map definition containing an async function:
+
+```
+module.exports.map = {
+    async: function(example, done){
+        setTimeout(function(){
+            if (example.error){
+                done('ERROR');
+            }
+            else {
+                done(null, 5);
+            }
+        }, 200);
+    }
+}
+```
+
+Call the mapping function on an empty object:
+
+```
+mapper.map('AsyncExample', {}, function(err, result) {
+`    // Access result here
+`});
+```
+
+The callback follows the Node convention of error then result, and will contain an array of any errors generated during asynchronous calls. For example, any database accesses that resulted in errors will have the error propagated to this callback. If no callback is supplied to `map`, the call will be treated synchronously and the result will be returned as usual.
