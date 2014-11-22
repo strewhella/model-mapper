@@ -25,7 +25,6 @@ function addError(err){
     vm.errors.push(err);
 }
 
-//TODO: Add aliasing ability for maps
 function createMapsFromDir(directory) {
     var files = fs.readdirSync(directory);
 
@@ -35,6 +34,9 @@ function createMapsFromDir(directory) {
             var config = require(path.join(directory, file));
 
             if (config.map) {
+                if (config.alias && _.isString(config.alias)){
+                    outputName = config.alias;
+                }
                 createMap(outputName, config.map);
             }
             else {

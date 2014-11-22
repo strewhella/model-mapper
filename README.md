@@ -114,11 +114,13 @@ The callback follows the Node convention of error then result, and will contain 
 
 The signature of the async map function: `map(outputName, input, [callback])`
 
-**Update 1.1.5 - Mapping constant values**
+**Update 1.1.5 - Mapping constant values and map aliasing**
+
+*Constants*
 
 Added support for directly mapping constant values. You can now directly map values to your resultant objects. All values will map directly **except** for strings.
 
-In the case of string constants, you must prefix them when '=', unless you desire an empty, in which case '' will work just fine.
+In the case of string constants, you must prefix them with '=' to prevent an attempted property mapping, unless you desire an empty string, in which case '' will work just fine.
 
 Example constants object mappings:
 
@@ -136,3 +138,10 @@ module.exports.map = {
     undefinedValue: undefined
 };
 ```
+
+If you want to map a function to your output, you can define a function that returns a function.
+
+*Aliasing maps*
+
+You can now alias the maps you add from a directory with the `createMapsFromDir` method. Simply export a string field called `alias` and this will be the name of your map instead of the filename. For example:
+

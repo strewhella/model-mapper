@@ -373,4 +373,16 @@ describe('model-mapper', function(){
             _.isUndefined(constantResult.undefinedValue).should.eql(true);
         });
     });
+
+    describe('when aliasing maps in files', function(){
+        it('should have created a map by the alias name', function(){
+            mapper.getMaps().should.have.property('MyAlias');
+        });
+
+        it('should map an aliased map correctly', function(){
+            var aliased = mapper.map('MyAlias', {});
+            aliased.should.have.property('placeholder');
+            _.isNull(aliased.placeholder).should.eql(true);
+        });
+    });
 });
