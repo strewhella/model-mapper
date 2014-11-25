@@ -93,7 +93,7 @@ function getMetadata(outputName){
 }
 
 function map(outputName, input, callback) {
-    vm.errors = [];
+    vm.errors = null;
 
     var mapConfig = vm.maps[outputName];
     if (mapConfig) {
