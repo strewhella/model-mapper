@@ -385,4 +385,32 @@ describe('model-mapper', function(){
             _.isNull(aliased.placeholder).should.eql(true);
         });
     });
+
+    describe('when using metadata', function(){
+        it('when getting metadata for map that doesn\'t exist', function(){
+            (function(){mapper.getMetadata('Blah')}).should.throw(/Cannot/);
+        });
+
+        it('when getting metadata that doesn\'t exist for map that does', function(){
+            should.not.exist(mapper.getMetadata('ExampleViewModel'));
+        });
+
+        it('when getting metadata that does exist', function(){
+            should.exist(mapper.getMetadata('MetadataExample'));
+        });
+
+        it('when setting metadata to non existent map', function(){
+            (function(){mapper.setMetadata('Blah', 'metadata')}).should.throw(/Cannot/);
+        });
+
+        it('when setting metadata directly to existing map', function(){
+            mapper.setMetadata('ExampleViewModel', 'metadata');
+            mapper.getMetadata('ExampleViewModel').should.eql('metadata');
+        });
+
+        it('when setting metadata from directory file', function(){
+            mapper.getMetadata('MetadataExample').should.have.property('data');
+            mapper.getMetadata('MetadataExample').data.should.eql('my metadata');
+        });
+    });
 });

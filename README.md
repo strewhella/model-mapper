@@ -145,3 +145,18 @@ If you want to map a function to your output, you can define a function that ret
 
 You can now alias the maps you add from a directory with the `createMapsFromDir` method. Simply export a string field called `alias` and this will be the name of your map instead of the filename. For example:
 
+```
+module.exports.alias = 'MyAlias';
+
+module.exports.map = {
+    placeholder: null
+};
+```
+
+**Update 1.1.6 - Metadata**
+
+You can now add metadata to your map definition files. Use this to include any arbitrary data you want to associate with your mappings.
+
+You can set the metadata for a map by calling `setMetadata(outputName, metadata)` directly, or by exporting a `metadata` object in your map file. The metadata can then be accessed with `getMetadata(outputName)`
+
+This feature is useful, for example, if you want to associate some database retrieval data with a view model. Eg. If using Mongoose, you can store the string of fields to be populated for that view model.

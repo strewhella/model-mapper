@@ -3,9 +3,11 @@
 */
 'use strict';
 
+module.exports.setMetadata = setMetadata;
 module.exports.createMapsFromDir = createMapsFromDir;
 module.exports.createMap = createMap;
 module.exports.getMaps = getMaps;
+module.exports.getMetadata = getMetadata;
 module.exports.map = map;
 
 var _ = require('underscore');
@@ -25,6 +27,16 @@ function addError(err){
     vm.errors.push(err);
 }
 
+function setMetadata(outputName, metadata){
+    var map = vm.maps[outputName];
+    if (map){
+        map.metadata = metadata;
+    }
+    else {
+        throw new Error('Cannot add metadata to non existent map - ' + outputName);
+    }
+}
+
 function createMapsFromDir(directory) {
     var files = fs.readdirSync(directory);
 
@@ -37,7 +49,12 @@ function createMapsFromDir(directory) {
                 if (config.alias && _.isString(config.alias)){
                     outputName = config.alias;
                 }
+
                 createMap(outputName, config.map);
+
+                if (config.metadata){
+                    setMetadata(outputName, config.metadata);
+                }
             }
             else {
                 console.error('No map config exported in ' + outputName + '.js');
@@ -63,6 +80,16 @@ function getMappedValue(input, props) {
 
 function getMaps(){
     return vm.maps;
+}
+
+function getMetadata(outputName){
+    var map = vm.maps[outputName];
+    if (map){
+        return map.metadata;
+    }
+    else {
+        throw new Error('Cannot retrieve metadata for non existent map - ' + outputName);
+    }
 }
 
 function map(outputName, input, callback) {
