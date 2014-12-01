@@ -206,7 +206,9 @@ function mapProperty(params, callback){
         if (!input.hasOwnProperty(key)){
             callback();
         }
-        callback(null, input[key]);
+        else {
+            callback(null, input[key]);
+        }
     }
     else if (_.isString(value)){
         if (value.length > 0 && value[0] !== '=') {
