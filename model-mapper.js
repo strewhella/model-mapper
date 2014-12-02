@@ -28,9 +28,8 @@ function addError(err){
 }
 
 function setMetadata(outputName, metadata){
-    var map = vm.maps[outputName];
-    if (map){
-        map.metadata = metadata;
+    if (vm.maps[outputName]){
+        vm.maps[outputName].metadata = metadata;
     }
     else {
         throw new Error('Cannot add metadata to non existent map - ' + outputName);
@@ -151,6 +150,10 @@ function mapObject(params, callback){
     var keys = Object.keys(config);
     var calls = [];
     for (var i = 0, length = keys.length; i < length; ++i){
+        if (keys[i] === 'metadata'){
+            continue;
+        }
+
         calls.push({
             input: input,
             key: keys[i],

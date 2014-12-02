@@ -412,5 +412,10 @@ describe('model-mapper', function(){
             mapper.getMetadata('MetadataExample').should.have.property('data');
             mapper.getMetadata('MetadataExample').data.should.eql('my metadata');
         });
+
+        it.only('when mapping item with metadata', function(){
+            var vm = mapper.map('MetadataExample', {});
+            vm.should.not.have.property('metadata');
+        });
     });
 });
