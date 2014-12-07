@@ -258,6 +258,21 @@ describe('model-mapper', function(){
             (function(){mapper.map('ExampleViewModel', undefined)}).should.throw(/undefined/);
         });
 
+        it('should return null for direct mapping fields with no value', function(){
+            var result = mapper.map('ExampleViewModel', {});
+            _.isNull(result.object).should.eql(true);
+        });
+
+        it('should return null for object fields with no value', function(){
+            var result = mapper.map('ExampleViewModel', {});
+            _.isNull(result.nested).should.eql(true);
+        });
+
+        it('should return null for function fields with no value', function(){
+            var result = mapper.map('ExampleViewModel', {});
+            _.isNull(result.func).should.eql(true);
+        });
+
     });
 
     describe('when mapping async functions', function(){
@@ -305,7 +320,15 @@ describe('model-mapper', function(){
 
         it('should map arrays of objects with correct values', function(done){
             mapper.map('AsyncExample', [{}, {}], function(err, asyncResult){
-                asyncResult.should.eql([{async:5},{async:5}]);
+                asyncResult.should.eql([{async:5, sync: 'success'},{async:5, sync: 'success'}]);
+                done();
+            });
+        });
+
+        it('should still work for synchronous functions', function(done){
+            mapper.map('AsyncExample', [{}, {}], function(err, asyncResult){
+                asyncResult[0].should.have.property('sync');
+                asyncResult[0].sync.should.eql('success');
                 done();
             });
         });
@@ -413,7 +436,7 @@ describe('model-mapper', function(){
             mapper.getMetadata('MetadataExample').data.should.eql('my metadata');
         });
 
-        it.only('when mapping item with metadata', function(){
+        it('when mapping item with metadata', function(){
             var vm = mapper.map('MetadataExample', {});
             vm.should.not.have.property('metadata');
         });

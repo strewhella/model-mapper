@@ -69,6 +69,7 @@ function createMap(outputName, map) {
 function getMappedValue(input, props) {
     for (var i = 0, length = props.length; i < length; ++i) {
         if (!input || !input.hasOwnProperty(props[i])){
+            input = null;
             break;
         }
         input = input[props[i]];
@@ -187,6 +188,7 @@ function mapProperty(params, callback){
     var key = params.key;
     var value = params.value;
 
+    // Map a function
     if (_.isFunction(value)){
         try {
             var result = value(input, function(err, result){
@@ -203,25 +205,39 @@ function mapProperty(params, callback){
                 callback(null, result);
             }
         }
-        catch (e){}
+        catch (e){
+            callback(null, null);
+        }
     }
+    // Map a direct mapping
     else if (value === '='){
         if (!input.hasOwnProperty(key)){
-            callback();
+            callback(null, null);
         }
         else {
             callback(null, input[key]);
         }
     }
+    // Map a string field
     else if (_.isString(value)){
+        // Map a property chain
         if (value.length > 0 && value[0] !== '=') {
             var props = value.split('.');
             callback(null, getMappedValue(input, props));
         }
-        else {
+        // Map a constant string
+        else if (value.length > 0 && value[0] === '='){
             callback(null, value.substring(1));
         }
+        // Map an empty string
+        else if (value.length === 0){
+            callback(null, value);
+        }
+        else {
+            callback(null, null);
+        }
     }
+    // Map a constant
     else {
         callback(null, value);
     }

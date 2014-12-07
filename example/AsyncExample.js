@@ -11,5 +11,9 @@ module.exports.map = {
                 done(null, 5);
             }
         }, 200);
+
+    },
+    sync: function(){
+        return 'success';
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "model-mapper",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "description": "Utility for flattening models into view models",
   "repository": "https://github.com/strewhella/model-mapper.git",
   "bugs": "https://github.com/strewhella/model-mapper/issues",
