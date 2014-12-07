@@ -3,6 +3,7 @@
 */
 'use strict';
 
+module.exports.addAutoFunction = addAutoFunction;
 module.exports.setMetadata = setMetadata;
 module.exports.createMapsFromDir = createMapsFromDir;
 module.exports.createMap = createMap;
@@ -17,8 +18,13 @@ var async = require('async');
 
 var vm = {
     maps: {},
-    errors: null
+    errors: null,
+    autoFunctions: {}
 };
+
+function addAutoFunction(property, functionName){
+    vm.autoFunctions[property] = functionName;
+}
 
 function addError(err){
     if (!vm.errors){
@@ -73,6 +79,17 @@ function getMappedValue(input, props) {
             break;
         }
         input = input[props[i]];
+
+        // If there's an auto function for this prop, execute it if its actually a function, otherwise set null
+        var autoFunc = vm.autoFunctions[props[i]];
+        if (autoFunc){
+            if (_.isFunction(input[autoFunc])) {
+                input = input[autoFunc]();
+            }
+            else {
+                input = null;
+            }
+        }
     }
 
     return input;

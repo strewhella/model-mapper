@@ -81,7 +81,8 @@ You can create mappings of your properties in 3 ways:
 
 `function`s can be specfied as configuration properties and these will be executed by the mapper, with the current input object passed in to the function. This enables you to nest mappings as above in the example. It also allows you to add calculated fields to your resultant view models.
 
-**Update 1.1 - Asynchronous mapping functions**
+
+**Asynchronous mapping functions**
 
 Added support for asynchronous mapping functions. A callback can now be optionally passed to `map`, causing the function to be treated asyncronously.
 
@@ -114,9 +115,8 @@ The callback follows the Node convention of error then result, and will contain 
 
 The signature of the async map function: `map(outputName, input, [callback])`
 
-**Update 1.1.5 - Mapping constant values and map aliasing**
 
-*Constants*
+**Constants**
 
 Added support for directly mapping constant values. You can now directly map values to your resultant objects. All values will map directly **except** for strings.
 
@@ -141,7 +141,8 @@ module.exports.map = {
 
 If you want to map a function to your output, you can define a function that returns a function.
 
-*Aliasing maps*
+
+**Aliasing maps**
 
 You can now alias the maps you add from a directory with the `createMapsFromDir` method. Simply export a string field called `alias` and this will be the name of your map instead of the filename. For example:
 
@@ -153,10 +154,19 @@ module.exports.map = {
 };
 ```
 
-**Update 1.1.6 - Metadata**
+**Metadata**
 
 You can now add metadata to your map definition files. Use this to include any arbitrary data you want to associate with your mappings.
 
 You can set the metadata for a map by calling `setMetadata(outputName, metadata)` directly, or by exporting a `metadata` object in your map file. The metadata can then be accessed with `getMetadata(outputName)`
 
 This feature is useful, for example, if you want to associate some database retrieval data with a view model. Eg. If using Mongoose, you can store the string of fields to be populated for that view model.
+
+
+**Auto Functions**
+
+You can configure model-mapper to automatically try and execute a function on a property. For example, in your `server.js`, if you added:
+
+`mapper.addAutoFunction('_id', 'toString');`
+
+This would cause the `toString()` method to be called on any properties found by the mapper called `_id`. This is notably useful for automatically converting Mongoose `_id`s to their string representation.

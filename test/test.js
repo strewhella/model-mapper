@@ -441,4 +441,32 @@ describe('model-mapper', function(){
             vm.should.not.have.property('metadata');
         });
     });
+
+    describe.only('when using auto functions', function(){
+        var goodOutput, badOutput;
+        before(function(){
+            var goodInput = {
+                autofunc: {}
+            };
+            goodInput.autofunc.execautofunc = function(){
+                return 'Success!';
+            };
+            mapper.addAutoFunction('autofunc', 'execautofunc');
+            goodOutput = mapper.map('AutoFuncExample', goodInput);
+
+            var badInput = {
+                autofunc: {}
+            };
+            badInput.autofunc.execautofunc = 'not a function!!';
+            badOutput = mapper.map('AutoFuncExample', badInput);
+        });
+
+        it('should execute auto functions', function(){
+            goodOutput.output.should.eql('Success!');
+        });
+
+        it('should ignore auto functions that are not functions', function(){
+            _.isNull(badOutput.output).should.eql(true);
+        });
+    });
 });
