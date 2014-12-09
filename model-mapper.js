@@ -144,7 +144,7 @@ function map(outputName, input, callback) {
             });
         }
         else {
-            if (calls.length === 1){
+            if (!Array.isArray(input)){
                 return mapObject(calls[0]);
             }
             var output = [];

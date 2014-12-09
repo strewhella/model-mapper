@@ -217,6 +217,11 @@ describe('model-mapper', function(){
         it('should contain two entries', function(){
             result.length.should.equal(2);
         });
+
+        it('should return an array even for single element arrays', function(){
+            var array = mapper.map('ExampleViewModel', [Example]);
+            Array.isArray(array).should.eql(true);
+        });
     });
 
     describe('when passed invalid mappings', function(){
@@ -442,7 +447,7 @@ describe('model-mapper', function(){
         });
     });
 
-    describe.only('when using auto functions', function(){
+    describe('when using auto functions', function(){
         var goodOutput, badOutput;
         before(function(){
             var goodInput = {
