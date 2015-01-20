@@ -1,4 +1,4 @@
-node-model-mapper
+model-mapper [![Build Status](https://travis-ci.org/strewhella/model-mapper.svg?branch=master)](https://travis-ci.org/strewhella/model-mapper)
 =================
 
 You can use this tool to copy data from nested models into a flattened view model.
